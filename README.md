@@ -1,15 +1,17 @@
-# ddns_dnspod
-## dnspod.rake
+# DDNS_DNSPOD
+## Rakefile
 
 ```
-=>rake -f  dnspod.rake -T
-rake check   # check domain change
-rake create  # create domain
-rake delete  # delete domain ip
+=>rake -T
+rake check   # Check domain change
+rake create  # Create record
+rake delete  # Delete record
 rake info    # info
-rake ip      # My IP
-rake list    # get Domain list and Record list
-rake update  # update domain ip
+rake ip      # Show local IP
+rake list    # get all domain infomantion
+rake update  # Update domain bind IP
+
 ```
 
 
+* Email:m@zcq100.com

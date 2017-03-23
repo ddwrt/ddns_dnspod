@@ -1,23 +1,18 @@
 #!/usr/bin/env ruby -wKU
 #Author zcq100 m@zcq100.com
-require "net/http"
-require "uri"
-require "open-uri"
-require "yaml"
-require "json"
+require './dnspod.rb'
 
 desc "info"
 task "info" do 
 	p token
 end
 
-desc "My IP"
+desc "Show local IP"
 task :ip do
 	p "Your IP is #{local_ip}"
 end
 
-
-desc "get Domain list and Record list"
+desc "get all domain infomantion"
 task "list" do 
 	domainlist=domains
 	domainlist["domains"].each{|domain|
@@ -31,12 +26,12 @@ task "list" do
 	}
 end
 
-desc "check domain change"
+desc "Check domain change"
 task "check" do
 	target=config["sub1"]
 	puts "check #{target}"
 	record=find_record(target)
-	if record.nil?
+	if record.nil
 		p "没找到域名#{target}"
 	else
 		localip=local_ip
@@ -46,12 +41,12 @@ task "check" do
 	end
 end
 
-desc "create domain "
+desc "Create record "
 task "create" do
 	#todo
 end
 
-desc "update domain ip"
+desc "Update domain bind IP"
 task "update" do 
 	target=config["sub1"]
 	name=name=target[0,target.index(".")]
@@ -67,66 +62,14 @@ task "update" do
 	end
 end	
 
+#Test
 task :test do
 	p fetch("/Record.List",{:domain=>"zcq100.com"})
 end
 
-desc "delete domain ip"
+desc "Delete record"
 task "delete" =>[:check] do 
 	p "delete..."
 	#todo
 end
 
-private 
-
-def local_ip
-	ip="0.0.0.0"
-	open("http://1212.ip138.com/ic.asp") do |f| 
-		str=f.read
-		ip= str.scan(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/).first
-	end
-end
-
-def config
-	YAML.load(File.open("dnspod.yaml"))
-end
-
-def domains
-	fetch("/Domain.List")
-end
-
-
-def records domain_id=nil?,domain_name=nil?
-	list=[]
-	if domain_id.nil?&&domain_name==nil?
-		domains["records"].each{|x|records :domain_id=>x["id"]}
-	elsif !domain_id.nil?
-		tmp=fetch("/Record.List",{:domain_id=>domain_id}) 
-		tmp["records"].each{|x|list<<x}
-	elsif !domain_name.nil?
-		tmp=fetch("/Record.List",{:domain=>domain_name})
-		tmp["records"].each{|x|list<<x}
-	end
-end
-
-
-#Find DomainInfo By subdomain
-def find_record subdomain
-	domain=subdomain[4+1,subdomain.length]
-	name=subdomain[0,subdomain.index(".")]
-	tmp =records(nil,domain)
-	tmp.select{|x|x["name"]==name}.first
-end
-
-def fetch path,params={}
-	yaml=config
-	token="#{yaml['id']},#{yaml['token']}"
-	uri=URI("https://dnsapi.cn/")
-	uri.path=path
-	params[:login_token]=token
-	params[:format]="json"
-	params[:lang]="en"
-	res=Net::HTTP.post_form uri,params
-	#,"UserAgent"=>"zcq100 DnsPod Client/1.0.0 (m@zcq100.com)"
-	JSON.parse res.body
-end

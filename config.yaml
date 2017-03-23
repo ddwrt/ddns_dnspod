@@ -1,0 +1,5 @@
+#This is DNSPOD APITOKEN
+id : "27009"
+token : "38b2994e113d483888a5090afdecb44f"
+#bind subdomain
+sub1: "sub.domain.com"

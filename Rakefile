@@ -12,7 +12,7 @@ task :ip do
 	p "Your IP is #{local_ip}"
 end
 
-desc "get all domain infomantion"
+desc "Get all domain infomantion"
 task "list" do 
 	domainlist=domains
 	domainlist["domains"].each{|domain|
@@ -31,7 +31,7 @@ task "check" do
 	target=config["sub1"]
 	puts "check #{target}"
 	record=find_record(target)
-	if record.nil
+	if record.nil?
 		p "没找到域名#{target}"
 	else
 		localip=local_ip
@@ -48,18 +48,7 @@ end
 
 desc "Update domain bind IP"
 task "update" do 
-	target=config["sub1"]
-	name=name=target[0,target.index(".")]
-	domain=target[4+1,target.length]
-	tmp=find_record(target)
-	record_id=tmp["id"]
-	localip=local_ip
-	if localip==tmp["value"]
-	 p "ip没有不改变，不更新 "
-	else
-	 msg=fetch("/Record.Ddns",{:domain=>domain,:record_id=>record_id,:record_line_id=>"10=0",:record_type=>"A",:value=>local_ip,:sub_domain=>name})
-	 p "#{msg['status']['code']}  #{msg['status']['message']}"
-	end
+	update_domain config["sub1"],local_ip
 end	
 
 #Test

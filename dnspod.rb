@@ -21,7 +21,7 @@ end
 
 #API token
 def token
- "#{config['id']},#{config['token']}"
+	"#{config['id']},#{config['token']}"
 end
 
 #request all domain use API
@@ -46,6 +46,19 @@ def records domain_id=nil?,domain_name=nil?
 	end
 end
 
+def update_domain domain_name,ip_address
+	name=domain_name[0,domain_name.index(".")]
+	domain=domain_name[4+1,domain_name.length]
+	tmp=find_record(domain_name)
+	record_id=tmp["id"]
+	if ip_address==tmp["value"]
+	 p "ip没有不改变，不更新 "
+	else
+	 msg=fetch("/Record.Ddns",{:domain=>domain,:record_id=>record_id,:record_line_id=>"10=0",:record_type=>"A",:value=>ip_address,:sub_domain=>name})
+	 p "#{msg['status']['code']}  #{msg['status']['message']}"
+	end
+end
+
 #find record by subdomain
 def find_record subdomain
 	domain=subdomain[4+1,subdomain.length]
@@ -61,8 +74,10 @@ def fetch path,params={}
 	uri.path=path
 	params[:login_token]=token
 	params[:format]="json"
-	params[:lang]="en"
+	params[:lang]="cn"
 	res=Net::HTTP.post_form uri,params
 	#,"UserAgent"=>"zcq100 DnsPod Client/1.0.0 (m@zcq100.com)"
-	JSON.parse res.body
+	resp=JSON.parse(res.body)
+	raise resp["status"]["message"] unless resp["status"]["code"]=="1"
+	resp
 end

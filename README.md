@@ -7,7 +7,7 @@
 
 - 首先你需要安装ruby环境
 - ```git clone https://github.com/zcq100/ddns_dnspod.git```
-- 执行 ```mv config.yaml.example config.yaml```
+- 执行 ```cd ddns_dnspod && mv config.yaml.example config.yaml```
 - 在config.yaml中设置id、token 和 要绑定的域名
 - 执行 ```rake update``` 
 
